@@ -111,6 +111,8 @@ class _SidenavbarState extends State<Sidenavbar> {
           _item(context, route: '/investments', icon: Icons.trending_up_rounded, label: "Investments"),
           _item(context, route: '/payouts', icon: Icons.account_balance_wallet_outlined, label: "Payouts"),
           _item(context, route: '/certificates', icon: Icons.description_outlined, label: "Certificates"),
+          _item(context, route: '/reports', icon: Icons.bar_chart_rounded, label: "Reports"),
+          _item(context, route: '/settings', icon: Icons.settings_outlined, label: "Settings"),
           _item(context, route: '/support', icon: Icons.chat_bubble_outline_rounded, label: "Support"),
 
           const Spacer(),
