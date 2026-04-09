@@ -1,5 +1,4 @@
-import 'package:rd_investment_platform/Pages/investments/investment_details.dart';
-import 'package:rd_investment_platform/Pages/investments/payoutsdetails.dart';
+
 import 'package:rd_investment_platform/Theme/apptheme.dart';
 import 'package:rd_investment_platform/components/inverment_bonds.dart';
 import 'package:flutter/material.dart';
@@ -71,15 +70,7 @@ class _InvestmentState extends State<Investment> {
           },
         ),
       ),
-    Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 20,
-                children: [
-                  Expanded( child: InvestmentDetails()),
-                  Expanded( child: PayoutSchedule()),
-                ],
-              ),
+   
     ],
   ),
 ),
