@@ -41,8 +41,9 @@ class ViewInvestmentbonds extends StatelessWidget {
       
       ),
       body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 25),
+        scrollDirection: Axis.vertical,
+        
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,9 +51,8 @@ class ViewInvestmentbonds extends StatelessWidget {
             Row(
               children: [
                 // Invested
-                SizedBox(
-                  width: 300,
-                  height: 120,
+                Expanded(
+                 
                   child: InvestmentKpiboxes(
                     icon: Icons.currency_rupee,
                     label: 'Invested',
@@ -63,9 +63,8 @@ class ViewInvestmentbonds extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 // Interest Rate
-                SizedBox(
-                  width: 300,
-                  height: 120,
+                Expanded(
+                  
                   child: InvestmentKpiboxes(
                     icon: Icons.trending_up,
                     label: 'Interest Rate',
@@ -76,9 +75,8 @@ class ViewInvestmentbonds extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 // Start Date
-                SizedBox(
-                  width: 300,
-                  height: 120,
+                Expanded(
+                 
                   child: InvestmentKpiboxes(
                     icon: Icons.calendar_today_outlined,
                     label: 'Start Date',
@@ -89,9 +87,8 @@ class ViewInvestmentbonds extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 // Maturity
-                SizedBox(
-                  width: 300,
-                  height: 120,
+                Expanded(
+                
                   child: InvestmentKpiboxes(
                     icon: Icons.access_time,
                     label: 'Maturity',
@@ -110,8 +107,8 @@ class ViewInvestmentbonds extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 20,
                 children: [
-                  SizedBox(width: 600, child: InvestmentDetails()),
-                  SizedBox(width: 900, child: PayoutSchedule()),
+                  Expanded( child: InvestmentDetails()),
+                  Expanded( child: PayoutSchedule()),
                 ],
               ),
             ),
