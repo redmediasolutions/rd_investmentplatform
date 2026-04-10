@@ -18,88 +18,94 @@ class _LoginPageState extends State<LoginPage> {
 
   final auth = FirebaseAuth.instance;
 
+  void _safeSetState(VoidCallback fn) {
+    if (mounted) setState(fn);
+  }
+
+  void showError(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg)),
+    );
+  }
+
   // 🔐 Login
   Future<void> login() async {
-    setState(() => loading = true);
-
+    _safeSetState(() => loading = true);
     try {
       await auth.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-
       await syncUser();
     } catch (e) {
-      setState(() => loading = false);
+      _safeSetState(() => loading = false);
       showError(e.toString());
     }
   }
 
   // 🆕 Register
   Future<void> register() async {
-    setState(() => loading = true);
-
+    _safeSetState(() => loading = true);
     try {
       await auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-
       await syncUser();
     } catch (e) {
-      setState(() => loading = false);
+      _safeSetState(() => loading = false);
       showError(e.toString());
     }
   }
 
   // 🔗 Call backend
-Future<void> syncUser() async {
-  try {
-    final user = auth.currentUser;
+  Future<void> syncUser() async {
+    try {
+      final user = auth.currentUser;
 
-    if (user == null) {
-      setState(() => loading = false);
-      showError('User not logged in');
-      return;
-    }
+      if (user == null) {
+        _safeSetState(() => loading = false);
+        showError('User not logged in');
+        return;
+      }
 
-    final token = await user.getIdToken();
+      final token = await user.getIdToken();
 
-    print(token); // Debug: Print the token
-
-    final response = await http.post(
-      Uri.parse('https://api.ip.rd-crm.in/auth/sync-user'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    setState(() => loading = false);
-
-    if (response.statusCode == 200) {
-      // ✅ SUCCESS MESSAGE
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login successful 🎉'),
-          backgroundColor: Colors.green,
-        ),
+      final response = await http.post(
+        Uri.parse('https://api.ip.rd-crm.in/auth/sync-user'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
       );
 
-    } else {
-      showError('Backend sync failed (${response.statusCode})');
+      // ⚠️ Widget may already be gone here — always guard from this point on
+      if (!mounted) return;
+
+      _safeSetState(() => loading = false);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login successful 🎉'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        showError('Backend sync failed (${response.statusCode})');
+      }
+    } catch (e) {
+      _safeSetState(() => loading = false);
+      showError('Something went wrong: $e');
+      debugPrint(e.toString());
     }
-
-  } catch (e) {
-    setState(() => loading = false);
-    showError('Something went wrong');
-    print(e);
   }
-}
 
-  void showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
-    );
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -119,9 +125,7 @@ Future<void> syncUser() async {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 30),
-
               TextField(
                 controller: emailController,
                 decoration: const InputDecoration(
@@ -129,9 +133,7 @@ Future<void> syncUser() async {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               TextField(
                 controller: passwordController,
                 obscureText: true,
@@ -140,28 +142,24 @@ Future<void> syncUser() async {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               ElevatedButton(
-                onPressed: loading
-                    ? null
-                    : (isLogin ? login : register),
+                onPressed: loading ? null : (isLogin ? login : register),
                 child: loading
-                    ? const CircularProgressIndicator()
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : Text(isLogin ? 'Login' : 'Register'),
               ),
-
               const SizedBox(height: 10),
-
               TextButton(
                 onPressed: () {
                   setState(() => isLogin = !isLogin);
                 },
                 child: Text(
-                  isLogin
-                      ? 'Create account'
-                      : 'Already have an account?',
+                  isLogin ? 'Create account' : 'Already have an account?',
                 ),
               ),
             ],

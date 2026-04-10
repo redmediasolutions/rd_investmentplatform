@@ -19,8 +19,7 @@ GoRouter createRouter() {
     initialLocation: '/',
 
     // 🔁 Refresh on auth state change
-    refreshListenable:
-        GoRouterRefreshStream(firebaseAuth.authStateChanges()),
+    refreshListenable: GoRouterRefreshStream(firebaseAuth.authStateChanges()),
 
     // 🔐 Auth Guard
     redirect: (context, state) {
@@ -40,10 +39,7 @@ GoRouter createRouter() {
 
     routes: [
       /// 🔓 AUTH ROUTE (NO SHELL)
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
 
       /// 🔒 APP ROUTES (WITH SHELL)
       ShellRoute(
@@ -52,15 +48,9 @@ GoRouter createRouter() {
         },
         routes: [
           // Redirect root → dashboard
-          GoRoute(
-            path: '/',
-            redirect: (_, _) => '/dashboard',
-          ),
+          GoRoute(path: '/', redirect: (_, _) => '/dashboard'),
 
-          GoRoute(
-            path: '/dashboard',
-            builder: (context, state) => Dashboard(),
-          ),
+          GoRoute(path: '/dashboard', builder: (context, state) => Dashboard()),
 
           GoRoute(
             path: '/investments',
@@ -69,7 +59,8 @@ GoRouter createRouter() {
 
           GoRoute(
             path: '/investmentbondsview',
-            builder: (context, state) => const ViewInvestmentbonds(),
+            builder: (context, state) =>
+                ViewInvestmentbonds(investmentId: state.extra as int),
           ),
 
           GoRoute(
