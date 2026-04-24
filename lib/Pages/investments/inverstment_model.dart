@@ -39,34 +39,3 @@ factory InvestmentModel.fromJson(Map<String, dynamic> json) {
 }
 }
 
-class PayoutModel {
-  final int id;
-  final int investmentId;
-  final double amount;
-  final String dueDate;
-  final String? paidDate;
-  final String status;
-  final String? reference;
-
-  PayoutModel({
-    required this.id,
-    required this.investmentId,
-    required this.amount,
-    required this.dueDate,
-    this.paidDate,
-    required this.status,
-    this.reference,
-  });
-
-  factory PayoutModel.fromJson(Map<String, dynamic> json) {
-    return PayoutModel(
-      id: json['id'],
-      investmentId: json['investment_id'],
-      amount: double.parse(json['amount'].toString()),
-      dueDate: json['due_date'],
-      paidDate: json['paid_date'],
-      status: json['status'],
-      reference: json['reference'],
-    );
-  }
-}

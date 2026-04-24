@@ -51,7 +51,7 @@ class ApiService {
     throw Exception('Failed to load investment');
   }
 
-  // Fetch payouts for an investment
+  // Fetch payouts for a single investment (used in detail screen)
   static Future<Map<String, dynamic>> getPayouts(int investmentId) async {
     final response = await http.get(
       Uri.parse('$baseUrl/investments/$investmentId/payouts'),
@@ -62,4 +62,24 @@ class ApiService {
     }
     throw Exception('Failed to load payouts');
   }
+
+  // Fetch ALL payouts across all investments (used in Payouts page)
+static Future<Map<String, dynamic>> getAllPayouts() async {
+  final headers = await _headers();
+  debugPrint('=== TOKEN BEING SENT ===');
+  debugPrint(headers['Authorization'] ?? 'NO TOKEN');
+  
+  final response = await http.get(
+    Uri.parse('$baseUrl/payouts'),
+    headers: headers,
+  );
+  
+  debugPrint('=== PAYOUTS STATUS: ${response.statusCode} ===');
+  debugPrint('=== PAYOUTS BODY: ${response.body} ===');
+  
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  }
+  throw Exception('Failed to load payouts: ${response.body}');
+}
 }

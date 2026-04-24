@@ -2,9 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// Import your theme constants
-// import 'package:care_kapital_mobile_app/theme/apptheme.dart'; 
-
 class Sidenavbar extends StatefulWidget {
   const Sidenavbar({super.key});
 
@@ -13,7 +10,26 @@ class Sidenavbar extends StatefulWidget {
 }
 
 class _SidenavbarState extends State<Sidenavbar> {
+  // Access current Firebase user
+  final User? _user = FirebaseAuth.instance.currentUser;
+  
+  // Track selected route for highlighting
   String _selectedRoute = '/dashboard';
+
+  /// Extracts initials from Name or Email for the Avatar
+  String _getInitials(String? name, String? email) {
+    if (name != null && name.trim().isNotEmpty) {
+      List<String> names = name.trim().split(" ");
+      if (names.length >= 2) {
+        return "${names[0][0]}${names[1][0]}".toUpperCase();
+      }
+      return names[0][0].toUpperCase();
+    }
+    if (email != null && email.isNotEmpty) {
+      return email[0].toUpperCase();
+    }
+    return "?";
+  }
 
   Widget _item(
     BuildContext context, {
@@ -34,7 +50,6 @@ class _SidenavbarState extends State<Sidenavbar> {
         margin: const EdgeInsets.symmetric(vertical: 2),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          // Active state uses a very subtle version of your primary blue
           color: isSelected
               ? const Color(0xFF0D63D1).withOpacity(0.08)
               : Colors.transparent,
@@ -65,7 +80,7 @@ class _SidenavbarState extends State<Sidenavbar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 280, // 🛠 Fix: Increased from 10 to standard sidebar width
+      width: 280,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -119,22 +134,39 @@ class _SidenavbarState extends State<Sidenavbar> {
           const Divider(height: 40, thickness: 1),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               radius: 20,
-              backgroundColor: Color(0xFF9735FF), // Purple from your theme
-              child: Text("AR", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+              backgroundColor: const Color(0xFF9735FF),
+              child: Text(
+                _getInitials(_user?.displayName, _user?.email),
+                style: const TextStyle(
+                  color: Colors.white, 
+                  fontSize: 14, 
+                  fontWeight: FontWeight.bold
+                ),
+              ),
             ),
-            title: const Text(
-              'Arjun Reddy',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1A1C1E)),
+            title: Text(
+              _user?.displayName ?? "User",
+              style: const TextStyle(
+                fontSize: 14, 
+                fontWeight: FontWeight.bold, 
+                color: Color(0xFF1A1C1E)
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-            subtitle: const Text('arjun@email.com', style: TextStyle(fontSize: 11)),
+            subtitle: Text(
+              _user?.email ?? 'No email linked',
+              style: const TextStyle(fontSize: 11),
+              overflow: TextOverflow.ellipsis,
+            ),
             trailing: IconButton(
               icon: const Icon(Icons.logout, size: 20, color: Color(0xFFE53935)),
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                 context.go('/login'); // Redirect to login after logout
-                // Logout logic here
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  context.go('/login');
+                }
               },
             ),
           ),

@@ -1,95 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:rd_investment_platform/Pages/payouts/payout_model.dart';
+
 
 class TransactionListItem extends StatelessWidget {
-  const TransactionListItem({super.key});
+  final PayoutModel payout;
+  const TransactionListItem({super.key, required this.payout});
 
   @override
   Widget build(BuildContext context) {
-    // Color constants based on the design
     const Color textDark = Color(0xFF1F2937);
     const Color textGrey = Color(0xFF6B7280);
-    const Color statusGreen = Color(0xFF22C55E);
-    const Color statusBgGreen = Color(0xFFDCFCE7);
+
+    final isPaid = payout.status == 'paid';
+    final dotColor =
+        isPaid ? const Color(0xFF22C55E) : const Color(0xFF3B82F6);
+    final tagBg =
+        isPaid ? const Color(0xFFDCFCE7) : const Color(0xFFDBEAFE);
+    final tagText =
+        isPaid ? const Color(0xFF166534) : const Color(0xFF1E40AF);
+    final tagLabel = isPaid ? 'Paid' : 'Upcoming';
+
+    final amountFormatted = payout.amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6), // Light grey background
+        color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Green Status Dot
-          const Padding(
-            padding: EdgeInsets.only(bottom: 45), // Aligns with the first line of text
-            child: CircleAvatar(
-              radius: 4,
-              backgroundColor: statusGreen,
-            ),
+          // Status dot
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30),
+            child: CircleAvatar(radius: 4, backgroundColor: dotColor),
           ),
           const SizedBox(width: 12),
 
-          // Main Information Column
+          // Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Government Bond Series A',
-                  style: TextStyle(
-                    fontSize: 16,
+                Text(
+                  payout.investmentTitle,
+                  style: const TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: textDark,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Row(
                   children: [
-                    _buildIconText(Icons.calendar_today_outlined, 'Due: 15 Jan 2026', textGrey),
-                    const SizedBox(width: 16),
-                    _buildIconText(Icons.calendar_today_outlined, 'Paid: 15 Jan 2026', textGrey),
+                    _iconText(
+                        Icons.calendar_today_outlined,
+                        'Due: ${payout.dueDate}',
+                        textGrey),
+                    if (isPaid && payout.paidDate != null) ...[
+                      const SizedBox(width: 16),
+                      _iconText(
+                          Icons.check_circle_outline,
+                          'Paid: ${payout.paidDate}',
+                          textGrey),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Transaction: TXN2026011501',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF9CA3AF), // Lighter grey for transaction ID
+                if (payout.reference != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Transaction: ${payout.reference}',
+                    style: const TextStyle(
+                        fontSize: 12, color: Color(0xFF9CA3AF)),
                   ),
-                ),
+                ],
               ],
             ),
           ),
 
-          // Price and Tag
-          Row(
+          // Amount + tag
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
-                '₹9,375',
-                style: TextStyle(
-                  fontSize: 18,
+              Text(
+                '₹$amountFormatted',
+                style: const TextStyle(
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: textDark,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(height: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: statusBgGreen,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'Paid',
+                    color: tagBg,
+                    borderRadius: BorderRadius.circular(8)),
+                child: Text(
+                  tagLabel,
                   style: TextStyle(
-                    color: statusGreen,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
+                      color: tagText,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12),
                 ),
               ),
             ],
@@ -99,19 +119,12 @@ class TransactionListItem extends StatelessWidget {
     );
   }
 
-  // Small helper for the icon + text layout
-  Widget _buildIconText(IconData icon, String label, Color color) {
+  Widget _iconText(IconData icon, String label, Color color) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: color),
+        Icon(icon, size: 13, color: color),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: color,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 13, color: color)),
       ],
     );
   }
