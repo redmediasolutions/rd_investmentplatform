@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart';
+import 'package:rd_investment_platform/profile/user_profile_model.dart';
 
 
 class ApiService {
@@ -23,20 +24,21 @@ class ApiService {
   }
 
   // Fetch all investments
-  static Future<List<InvestmentModel>> getInvestments() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/investments'),
-      headers: await _headers(),
-    );
-    debugPrint('Investments response: ${response.body}');
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return (data['investments'] as List)
-          .map((e) => InvestmentModel.fromJson(e))
-          .toList();
-    }
-    throw Exception('Failed to load investments');
+static Future<List<InvestmentModel>> getInvestments() async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/investments'),
+    headers: await _headers(),
+  );
+  debugPrint('=== INVESTMENTS STATUS: ${response.statusCode} ===');
+  debugPrint('=== INVESTMENTS BODY: ${response.body} ===');
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return (data['investments'] as List)
+        .map((e) => InvestmentModel.fromJson(e))
+        .toList();
   }
+  throw Exception('Failed to load investments');
+}
 
   // Fetch single investment
   static Future<InvestmentModel> getInvestmentById(int id) async {
@@ -82,4 +84,47 @@ static Future<Map<String, dynamic>> getAllPayouts() async {
   }
   throw Exception('Failed to load payouts: ${response.body}');
 }
+
+// ── USER PROFILE ───────────────────────────────────────
+
+static Future<UserProfileModel> getUserProfile() async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/user/profile'),
+    headers: await _headers(),
+  );
+  if (response.statusCode == 200) {
+    return UserProfileModel.fromJson(jsonDecode(response.body)['user']);
+  }
+  throw Exception('Failed to load profile');
+}
+
+static Future<void> updateProfile({
+  required String name,
+  String? phone,
+}) async {
+  final response = await http.put(
+    Uri.parse('$baseUrl/user/profile'),
+    headers: await _headers(),
+    body: jsonEncode({'name': name, 'phone': phone}),
+  );
+  if (response.statusCode != 200) {
+    final error = jsonDecode(response.body);
+    throw Exception(error['message'] ?? 'Failed to update profile');
+  }
+}
+
+static Future<void> changePassword(String newPassword) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/user/change-password'),
+    headers: await _headers(),
+    body: jsonEncode({'new_password': newPassword}),
+  );
+  if (response.statusCode != 200) {
+    final error = jsonDecode(response.body);
+    throw Exception(error['message'] ?? 'Failed to change password');
+  }
+}
+
+
+
 }

@@ -110,7 +110,7 @@ class _SidenavbarState extends State<Sidenavbar> {
                 ),
                 const SizedBox(width: 12),
                 const Text(
-                  "InvestHub",
+                  "Care Kapital",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
@@ -127,6 +127,7 @@ class _SidenavbarState extends State<Sidenavbar> {
           _item(context, route: '/payouts', icon: Icons.account_balance_wallet_outlined, label: "Payouts"),
           _item(context, route: '/certificates', icon: Icons.description_outlined, label: "Certificates"),
           _item(context, route: '/support', icon: Icons.chat_bubble_outline_rounded, label: "Support"),
+          _item(context, route: '/profile', icon: Icons.person_outline, label: "Profile"),
 
           const Spacer(),
 
