@@ -91,35 +91,27 @@ class _SidenavbarState extends State<Sidenavbar> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- LOGO SECTION ---
-          Padding(
-            padding: const EdgeInsets.only(bottom: 40, left: 8),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF0D63D1), Color(0xFF00B167)],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.trending_up, color: Colors.white, size: 24),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  "InvestHub",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1A1C1E),
-                  ),
-                ),
-              ],
-            ),
-          ),
+         // --- LOGO SECTION ---
+Padding(
+  padding: const EdgeInsets.only(bottom: 40, left: 8),
+  child: Row(
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Image.asset(
+  'assets/ck-logo.png',
+  width: 200,
+  height: 80,
+  fit: BoxFit.cover,
+),
+      ),
+    ],
+  ),
+),
 
           // --- MAIN NAVIGATION ---
           _item(context, route: '/dashboard', icon: Icons.grid_view_rounded, label: "Dashboard"),

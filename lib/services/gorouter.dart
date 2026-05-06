@@ -50,7 +50,7 @@ GoRouter createRouter() {
           // Redirect root → dashboard
           GoRoute(path: '/', redirect: (_, _) => '/dashboard'),
 
-          GoRoute(path: '/dashboard', builder: (context, state) => Dashboard()),
+          GoRoute(path: '/dashboard', builder: (context, state) => DashboardScreen()),
 
           GoRoute(
             path: '/investments',

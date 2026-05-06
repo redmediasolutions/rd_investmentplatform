@@ -109,63 +109,223 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Container(
-          width: 350,
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                isLogin ? 'Login' : 'Register',
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE3F2FD), Colors.white, Color(0xFFE8F5E9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            width: 380,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 20,
+                  color: Colors.black.withOpacity(0.1),
+                )
+              ],
+            ),
+            child: DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  // 🔷 Logo
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue, Colors.green],
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    child: const Icon(Icons.trending_up, color: Colors.white),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    "InvestHub",
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    "Manage your investments",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 🔘 Tabs
+                  const TabBar(
+                    tabs: [
+                      Tab(text: "Email Login"),
+                      Tab(text: "OTP Login"),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    height: 300,
+                    child: TabBarView(
+                      children: [
+                        // =====================
+                        // EMAIL LOGIN
+                        // =====================
+                        Column(
+                          children: [
+                            TextField(
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.email),
+                                labelText: "Email",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextField(
+                              controller: passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.lock),
+                                labelText: "Password",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // 🔘 Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 40,
+                              child: ElevatedButton(
+                                onPressed:
+                                    loading ? null : (isLogin ? login : register),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  backgroundColor: Colors.blue,
+                                ),
+                                child: loading
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : Text(isLogin ? "Sign In" : "Register",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                        ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            TextButton(
+                              onPressed: () {
+                                setState(() => isLogin = !isLogin);
+                              },
+                              child: Text(
+                                isLogin
+                                    ? "Create account"
+                                    : "Already have an account?",
+                              ),
+                            )
+                          ],
+                        ),
+
+                        // =====================
+                        // OTP LOGIN (UI ONLY)
+                        // =====================
+                        Column(
+                          children: [
+                            TextField(
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.phone_android),
+                                labelText: "Mobile Number",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(14),
+                                  backgroundColor: Colors.green,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text("Send OTP"),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // OTP Boxes
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List.generate(
+                                6,
+                                (index) => SizedBox(
+                                  width: 40,
+                                  child: TextField(
+                                    textAlign: TextAlign.center,
+                                    maxLength: 1,
+                                    decoration: const InputDecoration(
+                                      counterText: "",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(14),
+                                  backgroundColor: Colors.green,
+                                ),
+                                child: const Text("Verify OTP"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 30),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: loading ? null : (isLogin ? login : register),
-                child: loading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(isLogin ? 'Login' : 'Register'),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  setState(() => isLogin = !isLogin);
-                },
-                child: Text(
-                  isLogin ? 'Create account' : 'Already have an account?',
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
