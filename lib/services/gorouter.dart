@@ -11,6 +11,7 @@ import 'package:rd_investment_platform/Pages/navigation/shell.dart';
 import 'package:rd_investment_platform/Pages/payouts/payouts.dart';
 import 'package:rd_investment_platform/Pages/support/support.dart';
 import 'package:rd_investment_platform/auth/login.dart';
+import 'package:rd_investment_platform/profile/profile_page.dart';
 
 GoRouter createRouter() {
   final firebaseAuth = FirebaseAuth.instance;
@@ -76,6 +77,10 @@ GoRouter createRouter() {
           GoRoute(
             path: '/support',
             builder: (context, state) => const Support(),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => const ProfilePage(),
           ),
         ],
       ),
