@@ -45,7 +45,10 @@ class InvestmentDetails extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 32),
-          _detailRow('Bond ID', investment.bondId),
+          _detailRow(
+  'Bond ID',
+  investment.bondId.toString(),
+),
           Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
           _detailRow('Issuer', investment.issuer),
           Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
@@ -95,13 +98,14 @@ class InvestmentDetails extends StatelessWidget {
     );
   }
 
-  Widget _detailRow(String label, String value) {
+  Widget _detailRow(String label, dynamic value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: TextStyle(color: textGrey, fontSize: 14)),
         const SizedBox(height: 8),
-        Text(value,
+       Text(
+  value?.toString() ?? '-',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textDark)),
       ],
     );

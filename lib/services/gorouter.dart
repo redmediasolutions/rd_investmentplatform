@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rd_investment_platform/Pages/certificates/certificates.dart';
 import 'package:rd_investment_platform/Pages/dashboard/dashboard.dart';
+import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart';
 import 'package:rd_investment_platform/Pages/investments/investment.dart';
 import 'package:rd_investment_platform/Pages/investments/view_investmentbonds.dart';
 import 'package:rd_investment_platform/Pages/navigation/shell.dart';
@@ -51,7 +52,10 @@ GoRouter createRouter() {
           // Redirect root → dashboard
           GoRoute(path: '/', redirect: (_, _) => '/dashboard'),
 
-          GoRoute(path: '/dashboard', builder: (context, state) => DashboardScreen()),
+          GoRoute(
+            path: '/dashboard',
+            builder: (context, state) => DashboardScreen(),
+          ),
 
           GoRoute(
             path: '/investments',
@@ -61,7 +65,7 @@ GoRouter createRouter() {
           GoRoute(
             path: '/investmentbondsview',
             builder: (context, state) =>
-                ViewInvestmentbonds(investmentId: state.extra as int),
+                ViewInvestmentbonds(investment: state.extra as InvestmentModel),
           ),
 
           GoRoute(

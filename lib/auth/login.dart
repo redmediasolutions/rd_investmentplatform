@@ -14,7 +14,6 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   bool loading = false;
-  bool isLogin = true;
 
   final auth = FirebaseAuth.instance;
 
@@ -24,80 +23,71 @@ class _LoginPageState extends State<LoginPage> {
 
   void showError(String msg) {
     if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg)),
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.redAccent,
+      ),
     );
   }
 
-  // 🔐 Login
+  // 🔐 LOGIN
   Future<void> login() async {
     _safeSetState(() => loading = true);
+
     try {
-      await auth.signInWithEmailAndPassword(
+      final credential =
+          await auth.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      await syncUser();
-    } catch (e) {
-      _safeSetState(() => loading = false);
-      showError(e.toString());
-    }
-  }
 
-  // 🆕 Register
-  Future<void> register() async {
-    _safeSetState(() => loading = true);
-    try {
-      await auth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      await syncUser();
-    } catch (e) {
-      _safeSetState(() => loading = false);
-      showError(e.toString());
-    }
-  }
-
-  // 🔗 Call backend
-  Future<void> syncUser() async {
-    try {
-      final user = auth.currentUser;
+      final user = credential.user;
 
       if (user == null) {
-        _safeSetState(() => loading = false);
-        showError('User not logged in');
-        return;
+        throw Exception('Login failed');
       }
 
-      final token = await user.getIdToken();
+      final token = await user.getIdToken(true);
 
-      final response = await http.post(
-        Uri.parse('https://api.ip.rd-crm.in/auth/sync-user'),
+      final response = await http.get(
+        Uri.parse('https://api.ip.rd-crm.in/auth/me'),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
 
-      // ⚠️ Widget may already be gone here — always guard from this point on
       if (!mounted) return;
 
+      // ❌ INVALID USER
+      if (response.statusCode != 200) {
+        await auth.signOut();
+
+        showError('Access denied');
+        _safeSetState(() => loading = false);
+        return;
+      }
+
+      // ✅ VALID USER
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful 🎉'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
       _safeSetState(() => loading = false);
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful 🎉'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        showError('Backend sync failed (${response.statusCode})');
-      }
     } catch (e) {
+
+      await auth.signOut();
+
       _safeSetState(() => loading = false);
-      showError('Something went wrong: $e');
-      debugPrint(e.toString());
+
+      showError(
+        e.toString().replaceAll('Exception:', ''),
+      );
     }
   }
 
@@ -108,224 +98,185 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFE3F2FD), Colors.white, Color(0xFFE8F5E9)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(
+        color: Color(0xFF6B7280),
+        fontSize: 18,
+      ),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 22,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(
+          color: Color(0xFF6B7280),
+          width: 1.5,
         ),
       ),
-      child: Center(
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(
+          color: Color(0xFF1565D8),
+          width: 2,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF3F4F6),
+      body: Center(
         child: SingleChildScrollView(
           child: Container(
-            width: 380,
-            padding: const EdgeInsets.all(24),
+            width: 460,
+            padding: const EdgeInsets.symmetric(
+
+  horizontal: 36,
+
+  vertical: 40,
+
+),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 20,
-                  color: Colors.black.withOpacity(0.1),
-                )
-              ],
+              color: const Color(0xFFF8F8F8),
+              borderRadius: BorderRadius.circular(36),
             ),
-            child: DefaultTabController(
-              length: 2,
-              child: Column(
-                children: [
-                  // 🔷 Logo
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.blue, Colors.green],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                // LOGO + TITLE
+                Row(
+                  children: [
+                    Container(
+                      width: 82,
+                      height: 82,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1565D8),
+                        borderRadius: BorderRadius.circular(22),
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                      child: const Icon(
+                        Icons.trending_up_rounded,
+                        color: Colors.white,
+                        size: 42,
+                      ),
                     ),
-                    child: const Icon(Icons.trending_up, color: Colors.white),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "InvestHub",
-                    style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    "Manage your investments",
-                    style: TextStyle(color: Colors.grey),
-                  ),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(width: 24),
 
-                  // 🔘 Tabs
-                  const TabBar(
-                    tabs: [
-                      Tab(text: "Email Login"),
-                      Tab(text: "OTP Login"),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    height: 300,
-                    child: TabBarView(
-                      children: [
-                        // =====================
-                        // EMAIL LOGIN
-                        // =====================
-                        Column(
-                          children: [
-                            TextField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.email),
-                                labelText: "Email",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            TextField(
-                              controller: passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.lock),
-                                labelText: "Password",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            // 🔘 Button
-                            SizedBox(
-                              width: double.infinity,
-                              height: 40,
-                              child: ElevatedButton(
-                                onPressed:
-                                    loading ? null : (isLogin ? login : register),
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  backgroundColor: Colors.blue,
-                                ),
-                                child: loading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : Text(isLogin ? "Sign In" : "Register",
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                        ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            TextButton(
-                              onPressed: () {
-                                setState(() => isLogin = !isLogin);
-                              },
-                              child: Text(
-                                isLogin
-                                    ? "Create account"
-                                    : "Already have an account?",
-                              ),
-                            )
-                          ],
-                        ),
-
-                        // =====================
-                        // OTP LOGIN (UI ONLY)
-                        // =====================
-                        Column(
-                          children: [
-                            TextField(
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.phone_android),
-                                labelText: "Mobile Number",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(14),
-                                  backgroundColor: Colors.green,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: const Text("Send OTP"),
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            // OTP Boxes
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: List.generate(
-                                6,
-                                (index) => SizedBox(
-                                  width: 40,
-                                  child: TextField(
-                                    textAlign: TextAlign.center,
-                                    maxLength: 1,
-                                    decoration: const InputDecoration(
-                                      counterText: "",
-                                      border: OutlineInputBorder(),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(14),
-                                  backgroundColor: Colors.green,
-                                ),
-                                child: const Text("Verify OTP"),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    const Text(
+                      'CareKapital',
+                      style: TextStyle(
+                        fontSize: 44,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1E1B26),
+                      ),
                     ),
+                  ],
+                ),
+
+                const SizedBox(height: 18),
+
+                const Text(
+                  'Investor Portal',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1565D8),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 70),
+
+                // EMAIL
+                const Text(
+                  'Email',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E1B26),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: _inputDecoration(
+                    'investor@example.com',
+                  ),
+                ),
+
+                const SizedBox(height: 36),
+
+                // PASSWORD
+                const Text(
+                  'Password',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E1B26),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  onSubmitted: (_) => login(),
+                  decoration: _inputDecoration(
+                    '••••••••',
+                  ),
+                ),
+
+                const SizedBox(height: 56),
+
+                // LOGIN BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  height: 86,
+                  child: ElevatedButton(
+                    onPressed: loading ? null : login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1565D8),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    child: loading
+                        ? const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

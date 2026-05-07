@@ -141,7 +141,7 @@ class InvestmentBonds extends StatelessWidget {
           const Divider(height: 40),
           
           // --- Footer Action ---
-          Center(
+          /*Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -155,7 +155,7 @@ class InvestmentBonds extends StatelessWidget {
                 const Text('View Details', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
               ],
             ),
-          )
+          )*/
         ],
       ),
     );

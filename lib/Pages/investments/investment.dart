@@ -131,9 +131,10 @@ class _InvestmentState extends State<Investment> {
           final inv = investments[index];
           return GestureDetector(
             onTap: () {
-              final id = inv.id;
-              if (id == 0) return;
-              context.go('/investmentbondsview', extra: id);
+             context.go(
+  '/investmentbondsview',
+  extra: inv,
+);
             },
             child: InvestmentBonds(
               title: inv.title,

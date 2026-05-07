@@ -54,16 +54,27 @@ static Future<List<InvestmentModel>> getInvestments() async {
   }
 
   // Fetch payouts for a single investment (used in detail screen)
-  static Future<Map<String, dynamic>> getPayouts(int investmentId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/investments/$investmentId/payouts'),
-      headers: await _headers(),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    throw Exception('Failed to load payouts');
+static Future<List<dynamic>> getPayouts() async {
+
+  final response = await http.get(
+    Uri.parse('$baseUrl/payouts'),
+    headers: await _headers(),
+  );
+
+  debugPrint('Payouts API: ${response.statusCode}');
+  debugPrint('Payouts BODY: ${response.body}');
+
+  if (response.statusCode == 200) {
+
+    final data = jsonDecode(response.body);
+
+    return data['payouts'] ?? [];
   }
+
+  throw Exception(
+    'Failed to load payouts (${response.statusCode})',
+  );
+}
 
   // Fetch ALL payouts across all investments (used in Payouts page)
 static Future<Map<String, dynamic>> getAllPayouts() async {
@@ -125,6 +136,32 @@ static Future<void> changePassword(String newPassword) async {
   }
 }
 
+static Future<List<InvestmentModel>>
+    getUserBondInvestments() async {
 
+  final response = await http.get(
+    Uri.parse('$baseUrl/bond-investments'),
+    headers: await _headers(),
+  );
+
+  debugPrint(
+    'Investments API: ${response.body}',
+  );
+
+  if (response.statusCode == 200) {
+
+    final data = jsonDecode(response.body);
+
+    return (data['investments'] as List)
+        .map(
+          (e) => InvestmentModel.fromJson(e),
+        )
+        .toList();
+  }
+
+  throw Exception(
+    'Failed to fetch investments',
+  );
+}
 
 }

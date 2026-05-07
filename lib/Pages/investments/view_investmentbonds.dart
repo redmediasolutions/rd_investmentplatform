@@ -8,8 +8,8 @@ import 'package:rd_investment_platform/components/investment_kpiboxes.dart';
 import 'package:rd_investment_platform/services/api_service.dart';
 
 class ViewInvestmentbonds extends StatefulWidget {
-  final int investmentId;
-  const ViewInvestmentbonds({super.key, required this.investmentId});
+  final InvestmentModel investment;
+  const ViewInvestmentbonds({super.key, required this.investment});
 
   @override
   State<ViewInvestmentbonds> createState() => _ViewInvestmentbondsState();
@@ -22,8 +22,8 @@ class _ViewInvestmentbondsState extends State<ViewInvestmentbonds> {
   @override
   void initState() {
     super.initState();
-    _investmentFuture = ApiService.getInvestmentById(widget.investmentId);
-    _payoutsFuture = ApiService.getPayouts(widget.investmentId);
+    _investmentFuture = ApiService.getInvestmentById(widget.investment.id);
+    //_payoutsFuture = ApiService.getPayouts(widget.investment.id);
   }
 
   String _formatAmount(double amount) {

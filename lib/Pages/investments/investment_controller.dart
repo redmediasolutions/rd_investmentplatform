@@ -8,17 +8,29 @@ class InvestmentController extends ChangeNotifier {
   String? error;
 
   Future<void> fetchInvestments() async {
-    loading = true;
-    error = null;
-    notifyListeners();
+  loading = true;
+  error = null;
 
-    try {
-      investments = await ApiService.getInvestments();
-    } catch (e) {
-      error = e.toString();
-    } finally {
-      loading = false;
-      notifyListeners();
-    }
+  notifyListeners();
+
+  try {
+
+    final data =
+        await ApiService.getUserBondInvestments();
+
+    investments = data;
+
+  } catch (e) {
+
+    error = e.toString();
+
+    debugPrint('Investment fetch error: $e');
+
+  } finally {
+
+    loading = false;
+
+    notifyListeners();
   }
+}
 }
