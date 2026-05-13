@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rd_investment_platform/Pages/payouts/payout_controller.dart';
+import 'package:rd_investment_platform/Pages/payouts/request_payout_dialog.dart';
 import 'package:rd_investment_platform/Pages/payouts/trasaction_list.dart';
 
 class PayoutHistory extends StatelessWidget {
@@ -38,9 +39,23 @@ class PayoutHistory extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    context.go('/request-payout');
-                  },
+// ... inside ElevatedButton.icon for 'Request Payout'
+onPressed: controller.allPayouts.isEmpty 
+  ? null // Disable button if there are no payouts at all
+  : () {
+      // Use the first available payout from the 'allPayouts' list 
+      // to ensure we have context even if a filter is active.
+      final contextInvestment = controller.allPayouts.first;
+
+      showDialog(
+        context: context,
+        builder: (_) => RequestPayoutDialog(
+          investmentId: contextInvestment.investmentId,
+          bondName: contextInvestment.investmentTitle,
+          maxAmount: contextInvestment.amount,
+        ),
+      );
+    },
                   icon: const Icon(Icons.account_balance_wallet_outlined),
                   label: const Text('Request Payout'),
                   style: ElevatedButton.styleFrom(

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:rd_investment_platform/Pages/payouts/payout_request_model.dart';
 import 'package:rd_investment_platform/Theme/apptheme.dart';
