@@ -9,6 +9,7 @@ import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart'
 import 'package:rd_investment_platform/Pages/investments/investment.dart';
 import 'package:rd_investment_platform/Pages/investments/view_investmentbonds.dart';
 import 'package:rd_investment_platform/Pages/navigation/shell.dart';
+import 'package:rd_investment_platform/Pages/payouts/my_requests_page.dart';
 import 'package:rd_investment_platform/Pages/payouts/payouts.dart';
 import 'package:rd_investment_platform/Pages/support/support.dart';
 import 'package:rd_investment_platform/auth/login.dart';
@@ -77,7 +78,10 @@ GoRouter createRouter() {
             path: '/certificates',
             builder: (context, state) => const Certificates(),
           ),
-
+          GoRoute(
+            path: '/my-requests',
+            builder: (context, state) => const MyRequestsPage(),
+          ),
           GoRoute(
             path: '/support',
             builder: (context, state) => const Support(),

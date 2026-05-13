@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rd_investment_platform/Pages/payouts/payout_controller.dart';
 import 'package:rd_investment_platform/Pages/payouts/trasaction_list.dart';
 
-
 class PayoutHistory extends StatelessWidget {
   final PayoutController controller;
-  const PayoutHistory({super.key, required this.controller});
+
+  const PayoutHistory({
+    super.key,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
+    const primaryBlue = Color(0xFF0D63D1);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -27,7 +33,63 @@ class PayoutHistory extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header + filter
+          // Request Payout + My Requests Buttons
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.go('/request-payout');
+                  },
+                  icon: const Icon(Icons.account_balance_wallet_outlined),
+                  label: const Text('Request Payout'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryBlue,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.go('/my-requests');
+                  },
+                  icon: const Icon(Icons.history, size: 18),
+                  label: const Text('My Requests'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: primaryBlue,
+                    elevation: 0,
+                    side: const BorderSide(
+                      color: primaryBlue,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Header + Filter
           Row(
             children: [
               Text(
@@ -38,18 +100,23 @@ class PayoutHistory extends StatelessWidget {
                     ),
               ),
               const Spacer(),
+
               _FilterChip(
                 label: 'All',
                 active: controller.activeFilter == 'all',
                 onTap: () => controller.setFilter('all'),
               ),
+
               const SizedBox(width: 8),
+
               _FilterChip(
                 label: 'Paid',
                 active: controller.activeFilter == 'paid',
                 onTap: () => controller.setFilter('paid'),
               ),
+
               const SizedBox(width: 8),
+
               _FilterChip(
                 label: 'Upcoming',
                 active: controller.activeFilter == 'upcoming',
@@ -57,18 +124,35 @@ class PayoutHistory extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 16),
 
+          // Empty State
           if (controller.filteredPayouts.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 40),
               child: Center(
-                child: Text(
-                  'No payouts found.',
-                  style: TextStyle(color: Colors.grey.shade400),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 50,
+                      color: Colors.grey.shade300,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No payouts found.',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
+
+          // Payout List
           else
             ListView.separated(
               shrinkWrap: true,
@@ -102,10 +186,16 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 6,
+        ),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFF0D63D1) : const Color(0xFFF3F4F6),
+          color: active
+              ? const Color(0xFF0D63D1)
+              : const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -113,7 +203,9 @@ class _FilterChip extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: active ? Colors.white : const Color(0xFF6B7280),
+            color: active
+                ? Colors.white
+                : const Color(0xFF6B7280),
           ),
         ),
       ),

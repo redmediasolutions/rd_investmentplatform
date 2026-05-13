@@ -16,7 +16,6 @@ class PayoutController extends ChangeNotifier {
     notifyListeners();
 
     try {
-          // TEMPORARY DEBUG - remove after fix
     final debugData = await ApiService.getAllPayouts();
     debugPrint('=== PAYOUT RESPONSE ===');
     debugPrint(debugData.toString());
