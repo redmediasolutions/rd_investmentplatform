@@ -7,10 +7,7 @@ import 'package:rd_investment_platform/Pages/payouts/trasaction_list.dart';
 class PayoutHistory extends StatelessWidget {
   final PayoutController controller;
 
-  const PayoutHistory({
-    super.key,
-    required this.controller,
-  });
+  const PayoutHistory({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -39,23 +36,23 @@ class PayoutHistory extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-// ... inside ElevatedButton.icon for 'Request Payout'
-onPressed: controller.allPayouts.isEmpty 
-  ? null // Disable button if there are no payouts at all
-  : () {
-      // Use the first available payout from the 'allPayouts' list 
-      // to ensure we have context even if a filter is active.
-      final contextInvestment = controller.allPayouts.first;
+                  // ... inside ElevatedButton.icon for 'Request Payout'
+                  onPressed: controller.allPayouts.isEmpty
+                      ? null // Disable button if there are no payouts at all
+                      : () {
+                          // Use the first available payout from the 'allPayouts' list
+                          // to ensure we have context even if a filter is active.
+                          final contextInvestment = controller.allPayouts.first;
 
-      showDialog(
-        context: context,
-        builder: (_) => RequestPayoutDialog(
-          investmentId: contextInvestment.investmentId,
-          bondName: contextInvestment.investmentTitle,
-          maxAmount: contextInvestment.amount,
-        ),
-      );
-    },
+                          showDialog(
+                            context: context,
+                            builder: (_) => RequestPayoutDialog(
+                              investmentId: contextInvestment.investmentId,
+                              bondName: contextInvestment.investmentTitle,
+                              maxAmount: contextInvestment.amount,
+                            ),
+                          );
+                        },
                   icon: const Icon(Icons.account_balance_wallet_outlined),
                   label: const Text('Request Payout'),
                   style: ElevatedButton.styleFrom(
@@ -86,9 +83,7 @@ onPressed: controller.allPayouts.isEmpty
                     backgroundColor: Colors.white,
                     foregroundColor: primaryBlue,
                     elevation: 0,
-                    side: const BorderSide(
-                      color: primaryBlue,
-                    ),
+                    side: const BorderSide(color: primaryBlue),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 14,
@@ -110,9 +105,9 @@ onPressed: controller.allPayouts.isEmpty
               Text(
                 'Payout History',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const Spacer(),
 
@@ -166,7 +161,6 @@ onPressed: controller.allPayouts.isEmpty
                 ),
               ),
             )
-
           // Payout List
           else
             ListView.separated(
@@ -203,14 +197,9 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 6,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: active
-              ? const Color(0xFF0D63D1)
-              : const Color(0xFFF3F4F6),
+          color: active ? const Color(0xFF0D63D1) : const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -218,9 +207,7 @@ class _FilterChip extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: active
-                ? Colors.white
-                : const Color(0xFF6B7280),
+            color: active ? Colors.white : const Color(0xFF6B7280),
           ),
         ),
       ),

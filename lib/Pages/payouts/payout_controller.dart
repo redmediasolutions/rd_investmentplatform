@@ -10,31 +10,53 @@ class PayoutController extends ChangeNotifier {
   String? error;
   String activeFilter = 'all';
 
+  // Lifecycle flag to prevent "used after being disposed" error
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
+    }
+  }
+
+  // ========================= FETCH DATA =========================
+
   Future<void> fetchPayouts() async {
     loading = true;
     error = null;
     notifyListeners();
 
     try {
-    final debugData = await ApiService.getAllPayouts();
-    debugPrint('=== PAYOUT RESPONSE ===');
-    debugPrint(debugData.toString());
-    // END DEBUG
+      // Call API once and store result
+      final responseData = await ApiService.getAllPayouts();
+      
+      debugPrint('=== PAYOUT DATA RECEIVED ===');
 
-
-      final data = await ApiService.getAllPayouts();
-      allPayouts = (data['payouts'] as List)
+      // Update state
+      allPayouts = (responseData['payouts'] as List)
           .map((e) => PayoutModel.fromJson(e))
           .toList();
-      summary = PayoutSummary.fromJson(data['summary']);
+          
+      summary = PayoutSummary.fromJson(responseData['summary']);
+      
       _applyFilter(activeFilter);
     } catch (e) {
       error = e.toString();
+      debugPrint('Payout Fetch Error: $e');
     } finally {
       loading = false;
       notifyListeners();
     }
   }
+
+  // ========================= FILTERING =========================
 
   void setFilter(String filter) {
     activeFilter = filter;
@@ -46,14 +68,18 @@ class PayoutController extends ChangeNotifier {
     if (filter == 'all') {
       filteredPayouts = List.from(allPayouts);
     } else {
-      filteredPayouts =
-          allPayouts.where((p) => p.status == filter).toList();
+      filteredPayouts = allPayouts.where((p) => p.status == filter).toList();
     }
   }
 
+  // ========================= HELPERS =========================
+
+
   String formatAmount(double amount) {
+    // Regex for Indian Numbering System (standard 1,00,000 style)
     final formatted = amount.toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
+        RegExp(r'(\d+?)(?=(\d\d)+(\d)(?!\d))|(\d+?)(?=(\d\d\d)+(?!\d))'),
+        (Match m) => "${m[1] ?? m[4]},");
     return '₹$formatted';
   }
 }
