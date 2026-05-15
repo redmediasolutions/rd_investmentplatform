@@ -35,24 +35,32 @@ class InvestmentDetails extends StatelessWidget {
                   color: primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.business_center_outlined, size: 20, color: primaryBlue),
+                child: Icon(
+                  Icons.business_center_outlined,
+                  size: 20,
+                  color: primaryBlue,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
                 'Investment Details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textDark),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: textDark,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 32),
-          _detailRow(
-  'Bond ID',
-  investment.bondId.toString(),
-),
+          _detailRow('Bond ID', investment.bondId.toString()),
           Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
           _detailRow('Issuer', investment.issuer),
           Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
-          _detailRow('Payout Frequency', _capitalize(investment.payoutFrequency)),
+          _detailRow(
+            'Payout Frequency',
+            _capitalize(investment.payoutFrequency),
+          ),
           Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
           Text('Status', style: TextStyle(color: textGrey, fontSize: 14)),
           const SizedBox(height: 12),
@@ -80,7 +88,9 @@ class InvestmentDetails extends StatelessWidget {
             onPressed: () {},
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               side: BorderSide(color: Colors.grey.shade300),
             ),
             child: Row(
@@ -88,8 +98,13 @@ class InvestmentDetails extends StatelessWidget {
               children: [
                 Icon(Icons.download, size: 20, color: textDark),
                 const SizedBox(width: 8),
-                Text('Download Certificate',
-                    style: TextStyle(color: textDark, fontWeight: FontWeight.w600)),
+                Text(
+                  'Download Certificate',
+                  style: TextStyle(
+                    color: textDark,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -104,9 +119,14 @@ class InvestmentDetails extends StatelessWidget {
       children: [
         Text(label, style: TextStyle(color: textGrey, fontSize: 14)),
         const SizedBox(height: 8),
-       Text(
-  value?.toString() ?? '-',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textDark)),
+        Text(
+          value?.toString() ?? '-',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textDark,
+          ),
+        ),
       ],
     );
   }
