@@ -168,6 +168,7 @@ static Future<void> createInvestment({
       'bond_id': bondId,
       'investment_amount': amount,
       'payout_frequency': payoutFrequency,
+      'payout_percentage': 100,
       'start_date': startDate ??
           DateTime.now().toIso8601String().split('T')[0],
     }),

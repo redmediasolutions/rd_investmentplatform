@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:rd_investment_platform/Pages/payouts/payout_controller.dart';
-import 'package:rd_investment_platform/Pages/payouts/request_payout_dialog.dart';
 import 'package:rd_investment_platform/Pages/payouts/trasaction_list.dart';
 
 class PayoutHistory extends StatelessWidget {
@@ -31,74 +29,6 @@ class PayoutHistory extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Request Payout + My Requests Buttons
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  // ... inside ElevatedButton.icon for 'Request Payout'
-                  onPressed: controller.allPayouts.isEmpty
-                      ? null // Disable button if there are no payouts at all
-                      : () {
-                          // Use the first available payout from the 'allPayouts' list
-                          // to ensure we have context even if a filter is active.
-                          final contextInvestment = controller.allPayouts.first;
-
-                          showDialog(
-                            context: context,
-                            builder: (_) => RequestPayoutDialog(
-                              investmentId: contextInvestment.investmentId,
-                              bondName: contextInvestment.investmentTitle,
-                              maxAmount: contextInvestment.amount,
-                            ),
-                          );
-                        },
-                  icon: const Icon(Icons.account_balance_wallet_outlined),
-                  label: const Text('Request Payout'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    context.go('/my-requests');
-                  },
-                  icon: const Icon(Icons.history, size: 18),
-                  label: const Text('My Requests'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: primaryBlue,
-                    elevation: 0,
-                    side: const BorderSide(color: primaryBlue),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
           // Header + Filter
           Row(
             children: [
