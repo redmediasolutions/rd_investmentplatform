@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:rd_investment_platform/Pages/investments/bond_model.dart';
 import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart';
 import 'package:rd_investment_platform/Pages/payouts/payout_request_model.dart';
 import 'package:rd_investment_platform/profile/user_profile_model.dart';
@@ -44,9 +45,10 @@ static Future<List<InvestmentModel>> getInvestments() async {
   // Fetch single investment
   static Future<InvestmentModel> getInvestmentById(int id) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/investments/$id'),
+      Uri.parse('$baseUrl/bond-investments/$id'),
       headers: await _headers(),
     );
+    debugPrint('Investment by ID: ${response.statusCode} ${response.body}');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return InvestmentModel.fromJson(data['investment']);
@@ -134,6 +136,49 @@ static Future<void> changePassword(String newPassword) async {
   if (response.statusCode != 200) {
     final error = jsonDecode(response.body);
     throw Exception(error['message'] ?? 'Failed to change password');
+  }
+}
+
+static Future<List<BondModel>> getBonds() async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/bonds'),
+    headers: await _headers(),
+  );
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return (data['bonds'] as List)
+        .map((e) => BondModel.fromJson(e))
+        .toList();
+  }
+  throw Exception('Failed to load bonds');
+}
+
+static Future<void> createInvestment({
+  required int userId,
+  required int bondId,
+  required double amount,
+  required String payoutFrequency,
+  String? startDate,
+}) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/admin/bond-investments'),
+    headers: await _headers(),
+    body: jsonEncode({
+      'user_id': userId,
+      'bond_id': bondId,
+      'investment_amount': amount,
+      'payout_frequency': payoutFrequency,
+      'start_date': startDate ??
+          DateTime.now().toIso8601String().split('T')[0],
+    }),
+  );
+  if (response.statusCode != 200 && response.statusCode != 201) {
+    String message = 'Failed to create investment (${response.statusCode})';
+    try {
+      final error = jsonDecode(response.body);
+      message = error['message'] ?? message;
+    } catch (_) {}
+    throw Exception(message);
   }
 }
 

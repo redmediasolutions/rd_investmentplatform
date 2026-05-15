@@ -9,8 +9,6 @@ import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart'
 import 'package:rd_investment_platform/Pages/investments/investment.dart';
 import 'package:rd_investment_platform/Pages/investments/view_investmentbonds.dart';
 import 'package:rd_investment_platform/Pages/navigation/shell.dart';
-import 'package:rd_investment_platform/Pages/payouts/my_requests_page.dart';
-import 'package:rd_investment_platform/Pages/payouts/payouts.dart';
 import 'package:rd_investment_platform/Pages/support/support.dart';
 import 'package:rd_investment_platform/auth/login.dart';
 import 'package:rd_investment_platform/profile/profile_page.dart';
@@ -21,37 +19,26 @@ GoRouter createRouter() {
   return GoRouter(
     initialLocation: '/',
 
-    // 🔁 Refresh on auth state change
     refreshListenable: GoRouterRefreshStream(firebaseAuth.authStateChanges()),
 
-    // 🔐 Auth Guard
     redirect: (context, state) {
       final user = firebaseAuth.currentUser;
       final loggedIn = user != null;
-
       final isLogin = state.uri.path == '/login';
-
-      // Not logged in → go to login
       if (!loggedIn && !isLogin) return '/login';
-
-      // Logged in → prevent going back to login
       if (loggedIn && isLogin) return '/dashboard';
-
       return null;
     },
 
     routes: [
-      /// 🔓 AUTH ROUTE (NO SHELL)
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
 
-      /// 🔒 APP ROUTES (WITH SHELL)
       ShellRoute(
         builder: (context, state, child) {
           return ShellPage(child: child);
         },
         routes: [
-          // Redirect root → dashboard
-          GoRoute(path: '/', redirect: (_, _) => '/dashboard'),
+          GoRoute(path: '/', redirect: (context, state) => '/dashboard'),
 
           GoRoute(
             path: '/dashboard',
@@ -70,22 +57,15 @@ GoRouter createRouter() {
           ),
 
           GoRoute(
-            path: '/payouts',
-            builder: (context, state) => const Payouts(),
-          ),
-
-          GoRoute(
             path: '/certificates',
             builder: (context, state) => const Certificates(),
           ),
-          GoRoute(
-            path: '/my-requests',
-            builder: (context, state) => const MyRequestsPage(),
-          ),
+
           GoRoute(
             path: '/support',
             builder: (context, state) => const Support(),
           ),
+
           GoRoute(
             path: '/profile',
             builder: (context, state) => const ProfilePage(),
@@ -96,7 +76,6 @@ GoRouter createRouter() {
   );
 }
 
-/// 🔁 Forces GoRouter to refresh when Firebase auth changes
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _subscription = stream.listen((_) => notifyListeners());

@@ -203,7 +203,7 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 16),
           const Text("Due Date", style: TextStyle(color: Colors.grey)),
           const SizedBox(height: 4),
-          const Text("1 Apr 2026",
+          const Text("28 Apr 2026",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           const Text("Amount", style: TextStyle(color: Colors.grey)),
@@ -213,11 +213,6 @@ class DashboardScreen extends StatelessWidget {
                   fontSize: 22,
                   color: Colors.green,
                   fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          OutlinedButton(
-            onPressed: () {},
-            child: const Text("View All Payouts"),
-          )
         ],
       ),
     );

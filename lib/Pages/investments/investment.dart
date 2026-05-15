@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rd_investment_platform/Pages/investments/create_investment_dialog.dart';
 import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart';
 import 'package:rd_investment_platform/Pages/investments/investment_controller.dart';
 import 'package:rd_investment_platform/Theme/apptheme.dart';
@@ -38,12 +39,29 @@ class _InvestmentState extends State<Investment> {
     return '₹${amount.toStringAsFixed(0)}';
   }
 
+  Future<void> _openCreateDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (_) => const CreateInvestmentDialog(),
+    );
+    if (result == true) _controller.fetchInvestments();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(25),
       child: Scaffold(
         backgroundColor: backgroundLight,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _openCreateDialog,
+          backgroundColor: primaryBlue,
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text(
+            'Create Investment',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+        ),
         appBar: AppBar(
           leadingWidth: 400,
           backgroundColor: backgroundLight,
