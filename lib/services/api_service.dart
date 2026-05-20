@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rd_investment_platform/Pages/investments/bond_model.dart';
 import 'package:rd_investment_platform/Pages/investments/inverstment_model.dart';
-import 'package:rd_investment_platform/Pages/payouts/payout_request_model.dart';
 import 'package:rd_investment_platform/profile/user_profile_model.dart';
 
 
@@ -214,39 +213,4 @@ static Future<List<InvestmentModel>>
 
 
 
-// ── PAYOUT REQUESTS (investor) ─────────────────────────
-
-static Future<List<PayoutRequestModel>> getMyPayoutRequests() async {
-  final response = await http.get(
-    Uri.parse('$baseUrl/payout-requests'),
-    headers: await _headers(),
-  );
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return (data['requests'] as List)
-        .map((e) => PayoutRequestModel.fromJson(e))
-        .toList();
-  }
-  throw Exception('Failed to load requests');
-}
-
-static Future<void> submitPayoutRequest({
-  required int investmentId,
-  required double amount,
-  String? reason,
-}) async {
-  final response = await http.post(
-    Uri.parse('$baseUrl/payout-requests'),
-    headers: await _headers(),
-    body: jsonEncode({
-      'investment_id': investmentId,
-      'amount': amount,
-      if (reason != null && reason.isNotEmpty) 'reason': reason,
-    }),
-  );
-  if (response.statusCode != 200) {
-    final error = jsonDecode(response.body);
-    throw Exception(error['message'] ?? 'Failed to submit request');
-  }
-}
 }

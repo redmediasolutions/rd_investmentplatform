@@ -17,7 +17,6 @@ class _CreateInvestmentDialogState extends State<CreateInvestmentDialog> {
   List<BondModel> _bonds = [];
   BondModel? _selectedBond;
   int? _userId;
-  String _payoutFrequency = 'monthly';
   bool _loadingData = true;
   bool _submitting = false;
   String? _loadError;
@@ -74,7 +73,7 @@ class _CreateInvestmentDialogState extends State<CreateInvestmentDialog> {
         userId: _userId!,
         bondId: _selectedBond!.id,
         amount: double.parse(_amountController.text.trim()),
-        payoutFrequency: _payoutFrequency,
+        payoutFrequency: _selectedBond!.payoutFrequency,
       );
       if (mounted) {
         Navigator.of(context).pop(true);
@@ -213,7 +212,7 @@ class _CreateInvestmentDialogState extends State<CreateInvestmentDialog> {
                   Icon(Icons.info_outline, size: 14, color: primaryBlue),
                   const SizedBox(width: 6),
                   Text(
-                    'Min: ${_fmt(_selectedBond!.minInvestment)}   •   Max: ${_fmt(_selectedBond!.maxInvestment)}',
+                    'Min: ${_fmt(_selectedBond!.minInvestment)}   •   Max: ${_fmt(_selectedBond!.maxInvestment)}   •   Payout: ${_capitalize(_selectedBond!.payoutFrequency)}',
                     style: TextStyle(fontSize: 12, color: primaryBlue),
                   ),
                 ],
@@ -250,62 +249,6 @@ class _CreateInvestmentDialogState extends State<CreateInvestmentDialog> {
             },
           ),
           const SizedBox(height: 20),
-
-          // Payout Frequency
-          Text(
-            'Payout Frequency',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: textDark,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _frequencyChip('monthly', 'Monthly'),
-              const SizedBox(width: 8),
-              _frequencyChip('quarterly', 'Quarterly'),
-              const SizedBox(width: 8),
-              _frequencyChip('half-yearly', 'Half-Yearly'),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // Payout Date — fixed to 28th
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: primaryBlue.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: primaryBlue.withOpacity(0.2)),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.calendar_today_outlined,
-                    color: primaryBlue, size: 18),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Payout Date',
-                        style: TextStyle(fontSize: 12, color: textGrey)),
-                    const SizedBox(height: 2),
-                    Text(
-                      '28th of each month',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: textDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 28),
 
           // Submit
           SizedBox(
@@ -344,32 +287,6 @@ class _CreateInvestmentDialogState extends State<CreateInvestmentDialog> {
     return '₹${amount.toStringAsFixed(0)}';
   }
 
-  Widget _frequencyChip(String value, String label) {
-    final selected = _payoutFrequency == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _payoutFrequency = value),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 11),
-          decoration: BoxDecoration(
-            color: selected ? primaryBlue : Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: selected ? primaryBlue : Colors.grey.shade300,
-            ),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: selected ? Colors.white : textGrey,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  String _capitalize(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }

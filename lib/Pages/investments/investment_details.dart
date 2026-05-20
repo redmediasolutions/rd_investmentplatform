@@ -303,6 +303,8 @@ class InvestmentDetails extends StatelessWidget {
             _capitalize(investment.payoutFrequency),
           ),
           Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
+          _detailRow('Payout Date', '28th of each month'),
+          Divider(height: 40, thickness: 1, color: Colors.grey.shade100),
           Text('Status', style: TextStyle(color: textGrey, fontSize: 14)),
           const SizedBox(height: 12),
           Container(
